@@ -10,8 +10,8 @@ cffi==1.16.0
 charset-normalizer==3.3.0
 click==8.1.7
 colorama==0.4.6
-fastapi==0.103.2
-fastapi_amis_admin==0.6.7
+fastapi
+fastapi_amis_admin
 fastapi_scheduler==0.0.13
 greenlet==3.0.0
 h11==0.14.0
@@ -24,7 +24,7 @@ outcome==1.2.0
 packaging==23.2
 pycparser==2.21
 pydantic==1.10.11
-pydantic-settings==2.0.3
+pydantic-settings
 pydantic_core==2.10.1
 Pygments==2.16.1
 PySocks==1.7.1
