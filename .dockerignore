@@ -1,0 +1,5 @@
+.idea
+venv
+geckodriver.log
+win-run.cmd
+.git
