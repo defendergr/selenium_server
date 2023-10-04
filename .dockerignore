@@ -3,3 +3,4 @@ venv
 geckodriver.log
 win-run.cmd
 .git
+log.txt

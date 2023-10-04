@@ -1,5 +1,6 @@
 venv
 .idea
+log.txt
 geckodriver.log
 apps/geckodriver.log
 Api/config.py
