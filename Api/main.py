@@ -1,5 +1,5 @@
 import sys
-
+from fastapi.responses import RedirectResponse
 import requests
 from fastapi import Request
 from Api import app, scheduler
@@ -19,7 +19,7 @@ data = ''
 @app.get('/')
 def home():
     text = 'sport links, search machine API v1.0.0 By Defender'
-    return text
+    return RedirectResponse("https://defendersportstreams.com/")
 
 @app.get("/selenium/")
 async def selenium(url: str, request: Request):
@@ -94,11 +94,8 @@ def cron_task():
     sys.stdout.write(f'{elements} Elements found in URL \n')
     for acord in range(0, elements):
         if ele[acord].is_displayed():
-            dots = [".", "..", "..."]
             elements -= 1
-            for dot in dots:
-                d = dot
-            sys.stdout.write(f'\r{elements} Elements remaining{d}')
+            sys.stdout.write(f'\r{elements} Elements remaining...')
             sys.stdout.flush()
             ele[acord].click()
     sys.stdout.write("\rCompleted!\n")
