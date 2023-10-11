@@ -16,6 +16,15 @@ import os
 data = ''
 
 
+
+def progress_bar(percent=0, divide=100, width=20):
+    left = width * percent // (divide - 1)
+    right = width - left
+    bar = '█' * int(left) + '░' * int(right)
+    return bar
+
+
+
 @app.get('/')
 def home():
     text = 'sport links, search machine API v1.0.0 By Defender'
@@ -44,14 +53,15 @@ async def selenium(url: str, request: Request):
         driver.get(url=url)
         ele = driver.find_elements(By.TAG_NAME, 'h2')
         elements = len(ele)
+        percent = 0
         sys.stdout.write(f'{elements} Elements found in URL \n')
         for acord in range(0, elements):
             if ele[acord].is_displayed():
-                dots = [".", "..", "..."]
+                per = progress_bar(percent=percent, divide=len(ele))
+                percent += 1
                 elements -= 1
-                for dot in dots:
-                    d = dot
-                sys.stdout.write(f'\r{elements} Elements remaining{d}')
+
+                sys.stdout.write(f'\r{elements} Elements remaining... {per}')
                 sys.stdout.flush()
                 ele[acord].click()
         sys.stdout.write("\rCompleted!\n")
@@ -91,13 +101,18 @@ def cron_task():
     driver.get(url=url)
     ele = driver.find_elements(By.TAG_NAME, 'h2')
     elements = len(ele)
+    percent = 0
     sys.stdout.write(f'{elements} Elements found in URL \n')
     for acord in range(0, elements):
         if ele[acord].is_displayed():
+            per = progress_bar(percent=percent, divide=len(ele))
+            percent += 1
             elements -= 1
-            sys.stdout.write(f'\r{elements} Elements remaining...')
+
+            sys.stdout.write(f'\r{elements} Elements remaining... {per}')
             sys.stdout.flush()
             ele[acord].click()
+
     sys.stdout.write("\rCompleted!\n")
     new_data = driver.page_source
     driver.close()
