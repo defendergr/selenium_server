@@ -27,7 +27,7 @@ def progress_bar(percent=0, divide=100, width=20):
 
 @app.get('/')
 def home():
-    text = 'sport links, search machine API v1.0.0 By Defender'
+    text = 'sport links, search machine API v1.0.12 By Defender'
     return RedirectResponse("https://defendersportstreams.com/")
 
 @app.get("/selenium/")
