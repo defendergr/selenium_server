@@ -82,7 +82,7 @@ def data(request: Request):
 
 
 # use when you want to run the job periodically at certain time(s) of day
-@scheduler.scheduled_job('cron', minute='00,05,10,15,20,25,30,35,40,45,50,55') #('interval', seconds=60)
+@scheduler.scheduled_job('cron', minute='00,10,20,30,40,50') #('interval', seconds=60)
 def cron_task():
     global data
     WEBHOOK_URL = 'https://defendersportstreams.com/webhook'
