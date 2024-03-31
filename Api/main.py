@@ -1,7 +1,11 @@
 import sys
-from fastapi.responses import RedirectResponse
+
+import pip
+from fastapi.responses import RedirectResponse, JSONResponse
 import requests
 from fastapi import Request
+
+
 from Api import app, scheduler
 from Api.config import *
 from selenium import webdriver
@@ -9,7 +13,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
-import os
+import os, platform
 
 
 
@@ -79,6 +83,43 @@ def data(request: Request):
     else:
         sys.stdout.write('invalid token\n')
         return 'invalid token'
+
+
+
+@app.get("/system/")
+def data(request: Request):
+    token = request.headers.get('token')
+    if token in API_KEYS:
+        try:
+            import psutil
+        except ModuleNotFoundError:
+            pip.main(['install', 'psutil'])
+
+        system_info = {
+            "system": platform.system(),
+            "node": platform.node(),
+            "release": platform.release(),
+            "version": platform.version(),
+            "machine": platform.machine(),
+            "processor": platform.processor(),
+            "OS": platform.platform(),
+            "OS release": platform.release(),
+            "OS version": platform.version(),
+            "OS architecture": platform.architecture(),
+            "CPU cores": psutil.cpu_count(logical=False),
+            "CPU threads": psutil.cpu_count(),
+            "RAM": str(round(psutil.virtual_memory().total / (1024.0 ** 3)))+"GB",
+            "Disk": str(round(psutil.disk_usage('/').total / (1024.0 ** 3)))+"GB",
+            "GPU VRAM": str(round(psutil.virtual_memory().total / (1024.0 ** 3)))+"GB",
+
+
+        }
+        return JSONResponse(content=system_info)
+        # return 'system info under construction'
+    else:
+        sys.stdout.write('invalid token\n')
+        return 'invalid token'
+
 
 
 # use when you want to run the job periodically at certain time(s) of day
