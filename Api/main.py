@@ -37,7 +37,7 @@ def home():
     return RedirectResponse("https://defendersportstreams.com/")
 
 @app.get("/selenium/")
-async def selenium(url: str, request: Request):
+async def selenium(request: Request, url=''):
     token = request.headers.get('token')
     # sys.stdout.write('header token:', token)
     # print('header token:',token)
@@ -55,8 +55,10 @@ async def selenium(url: str, request: Request):
             else:
                 service = Service(executable_path='/data/data/com.termux/files/usr/bin/geckodriver')
         driver = webdriver.Firefox(service=service, options=options)
-
-        driver.get(url=URL)
+        if url == '':
+            driver.get(url=URL)
+        else:
+            driver.get(url=url)
         ele = driver.find_elements(By.TAG_NAME, 'h2')
         elements = len(ele)
         percent = 0
