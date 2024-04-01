@@ -56,7 +56,7 @@ async def selenium(url: str, request: Request):
                 service = Service(executable_path='/data/data/com.termux/files/usr/bin/geckodriver')
         driver = webdriver.Firefox(service=service, options=options)
 
-        driver.get(url=url)
+        driver.get(url=URL)
         ele = driver.find_elements(By.TAG_NAME, 'h2')
         elements = len(ele)
         percent = 0
