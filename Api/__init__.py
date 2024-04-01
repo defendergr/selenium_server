@@ -4,12 +4,12 @@ from fastapi_amis_admin.admin.site import AdminSite
 from fastapi_scheduler import SchedulerAdmin
 
 app = FastAPI()
-'''
+
 app = FastAPI(
     docs_url=None, # Disable docs (Swagger UI)
     redoc_url=None, # Disable redoc
 )
-'''
+
 
 
 # Create `AdminSite` instance
