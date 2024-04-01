@@ -1,4 +1,6 @@
+import datetime
 import sys
+import time
 
 import pip
 from fastapi.responses import RedirectResponse, JSONResponse
@@ -95,6 +97,7 @@ def data(request: Request):
         except ModuleNotFoundError:
             pip.main(['install', 'psutil'])
 
+        uptime = time.time() - psutil.boot_time()
         system_info = {
             "system": platform.system(),
             "node": platform.node(),
@@ -108,10 +111,16 @@ def data(request: Request):
             "OS architecture": platform.architecture(),
             "CPU cores": psutil.cpu_count(logical=False),
             "CPU threads": psutil.cpu_count(),
-            "RAM": str(round(psutil.virtual_memory().total / (1024.0 ** 3)))+"GB",
-            "Disk": str(round(psutil.disk_usage('/').total / (1024.0 ** 3)))+"GB",
-            "GPU VRAM": str(round(psutil.virtual_memory().total / (1024.0 ** 3)))+"GB",
-
+            "RAM": str(round(psutil.virtual_memory().total / (1024 ** 3)))+"GB",
+            "Disk": str(round(psutil.disk_usage('/').total / (1024 ** 3)))+"GB",
+            "GPU VRAM": str(round(psutil.virtual_memory().total / (1024 ** 3)))+"GB",
+            "CPU load": str(psutil.cpu_percent())+"%",
+            "Memory load": str(psutil.virtual_memory().percent)+"%",
+            # "CPU temperature": str(psutil.sensors_temperatures(fahrenheit=False))+"°C", # doesn't work in windows
+            "Network received": str(round(psutil.net_io_counters().bytes_recv/(1024 ** 2)))+"MB",
+            "Network sent": str(round(psutil.net_io_counters().bytes_sent/(1024 ** 2)))+"MB",
+            "Uptime": str(round(uptime/60/60/24))+" Days "+str(round(uptime/60/60))+" Hours "+str(round(uptime/60))+" Minutes",
+            "Disk usage": str(psutil.disk_usage('/').percent)+"% of "+str(round(psutil.disk_usage('/').total / (1024 ** 3)))+"GB",
 
         }
         return JSONResponse(content=system_info)
