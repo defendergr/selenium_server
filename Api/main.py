@@ -1,12 +1,12 @@
 import datetime
 import sys
 import time
-
-import pip
+import psutil
 from fastapi.responses import RedirectResponse, JSONResponse
 import requests
 from fastapi import Request
-
+from termcolor import cprint
+from pyfiglet import figlet_format
 
 from Api import app, scheduler
 from Api.config import *
@@ -94,13 +94,14 @@ def data(request: Request):
 def data(request: Request):
     token = request.headers.get('token')
     if token in API_KEYS:
-        try:
-            import psutil
-        except ModuleNotFoundError:
-            pip.main(['install', 'psutil'])
+        # ASCII logo
+        logo = figlet_format('ARMBIAN', font='starwars')
+        # console print
+        cprint(logo, 'green')
 
         uptime = time.time() - psutil.boot_time()
         system_info = {
+            "logo": logo,
             "system": platform.system(),
             "node": platform.node(),
             "release": platform.release(),
