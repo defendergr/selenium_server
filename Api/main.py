@@ -122,7 +122,7 @@ def data(request: Request):
             # "CPU temperature": str(psutil.sensors_temperatures(fahrenheit=False))+"°C", # doesn't work in windows
             "Network received": str(round(psutil.net_io_counters().bytes_recv/(1024 ** 2)))+"MB",
             "Network sent": str(round(psutil.net_io_counters().bytes_sent/(1024 ** 2)))+"MB",
-            "Uptime": str(round(uptime/60/60/24))+" Days "+str(round(uptime/60/60))+" Hours "+str(round(uptime/60))+" Minutes",
+            "Uptime": str(datetime.timedelta(seconds=uptime)),
             "Disk usage": str(psutil.disk_usage('/').percent)+"% of "+str(round(psutil.disk_usage('/').total / (1024 ** 3)))+"GB",
 
         }
