@@ -95,7 +95,7 @@ def data(request: Request):
     token = request.headers.get('token')
     if token in API_KEYS:
         # ASCII logo
-        logo = figlet_format('Defender', font='standard').strip() # fonts url http://www.figlet.org/examples.html
+        logo = figlet_format('Defender', font='standard') # fonts url http://www.figlet.org/examples.html
         # console print
         cprint(logo, 'green')
 
