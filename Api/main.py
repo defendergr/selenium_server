@@ -99,7 +99,11 @@ def data(request: Request):
         # console print
         cprint(logo, 'green')
 
-        uptime = round(time.time() - psutil.boot_time())
+        if os.name == 'posix':
+            uptime = os.popen('uptime -p').read()
+        else:
+            uptime = None
+
         system_info = {
             "logo": logo, # use <pre> tag in html
             "system": platform.system(),
