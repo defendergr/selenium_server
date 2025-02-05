@@ -36,6 +36,10 @@ def home():
     text = 'sport links, search machine API v1.0.12 By Defender'
     return RedirectResponse("https://defendersportstreams.com/")
 
+@app.get("/agrules/")
+def agrules():
+    return "https://defendersportstreams.com"
+
 @app.get("/selenium/")
 async def selenium(request: Request, url=''):
     token = request.headers.get('token')
