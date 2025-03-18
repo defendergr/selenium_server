@@ -16,7 +16,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
 import os, platform
-
+import socket
 
 
 data = ''
@@ -140,12 +140,17 @@ def data(request: Request):
         sys.stdout.write('invalid token\n')
         return 'invalid token'
 
-
+task_running = False
 
 # use when you want to run the job periodically at certain time(s) of day
 @scheduler.scheduled_job('cron', minute='00,10,20,30,40,50') #('interval', seconds=60)
 def cron_task():
     global data
+    global task_running
+    if task_running:
+        print("Task already running, skipping.")
+        return
+    task_running = True
     WEBHOOK_URL = 'https://defendersportstreams.com/webhook'
     url = URL
     options = Options()
@@ -178,6 +183,8 @@ def cron_task():
     new_data = driver.page_source
     driver.close()
 
+    task_running = False
+
     if data != new_data:
         data = new_data
         requests.get(url=WEBHOOK_URL)
@@ -185,3 +192,30 @@ def cron_task():
     else:
         print("no new data")
 
+
+
+def is_connected(hostname):
+  try:
+    # See if we can resolve the host name - tells us if there is
+    # A DNS listening
+    host = socket.gethostbyname(hostname)
+    # Connect to the host - tells us if the host is actually reachable
+    s = socket.create_connection((host, 80), 2)
+    s.close()
+    return True
+  except Exception:
+     pass # We ignore any errors, returning False
+  return False
+
+
+@scheduler.scheduled_job('cron', minute='05,15,25,35,45,55') #('interval', seconds=60)
+def connection_status():
+    not_connected = 0
+    if not is_connected("192.168.2.1"):
+        not_connected += 1
+    if not_connected > 3:
+        print(f'No internet connection!')
+        os.system('sudo reboot')
+    if is_connected("192.168.2.1"):
+        not_connected = 0
+    print(is_connected("192.168.2.1"), not_connected)
