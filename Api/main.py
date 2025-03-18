@@ -181,9 +181,8 @@ def cron_task():
 
     sys.stdout.write("\rCompleted!\n")
     new_data = driver.page_source
-    driver.close()
-
     task_running = False
+    driver.close()
 
     if data != new_data:
         data = new_data
