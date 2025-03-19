@@ -1,2 +1,3 @@
 API_KEYS = ['Keys_example','123456Ab_%','After_adding_keys_rename_to_','config.py']
 URL = 'https://www.google.com'
+SYSTEM_PASSWORD = 'Linux sudo password for reboot if internet connection lost'

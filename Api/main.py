@@ -20,7 +20,7 @@ import socket
 
 
 data = ''
-
+not_connected = 0
 
 
 def progress_bar(percent=0, divide=100, width=20):
@@ -76,7 +76,7 @@ async def selenium(request: Request, url=''):
                 sys.stdout.write(f'\r{elements} Elements remaining... {per}')
                 sys.stdout.flush()
                 ele[acord].click()
-        sys.stdout.write("\rCompleted!\n")
+        print("\nCompleted!")
         scraped = driver.page_source
         driver.close()
         return scraped
@@ -140,56 +140,53 @@ def data(request: Request):
         sys.stdout.write('invalid token\n')
         return 'invalid token'
 
-task_running = False
+
 
 # use when you want to run the job periodically at certain time(s) of day
-@scheduler.scheduled_job('cron', minute='00,10,20,30,40,50') #('interval', seconds=60)
+@scheduler.scheduled_job('interval', seconds=600) #('cron', minute='00,10,20,30,40,50') #
 def cron_task():
     global data
-    global task_running
-    if task_running:
-        print("Task already running, skipping.")
-        return
-    task_running = True
-    WEBHOOK_URL = 'https://defendersportstreams.com/webhook'
-    url = URL
-    options = Options()
-    options.add_argument('--headless')
-    if os.name == 'nt':
-        service = Service(GeckoDriverManager().install())
-    elif os.name == 'posix':
-        if os.path.isfile('/usr/bin/geckodriver'):
-            service = Service(executable_path='/usr/bin/geckodriver')
+    try:
+        WEBHOOK_URL = 'https://defendersportstreams.com/webhook'
+        url = URL
+        options = Options()
+        options.add_argument('--headless')
+        if os.name == 'nt':
+            service = Service(GeckoDriverManager().install())
+        elif os.name == 'posix':
+            if os.path.isfile('/usr/bin/geckodriver'):
+                service = Service(executable_path='/usr/bin/geckodriver')
+            else:
+                service = Service(executable_path='/data/data/com.termux/files/usr/bin/geckodriver')
+        driver = webdriver.Firefox(service=service, options=options)
+
+        driver.get(url=url)
+        ele = driver.find_elements(By.TAG_NAME, 'h2')
+        elements = len(ele)
+        percent = 0
+        sys.stdout.write(f'{elements} Elements found in URL \n')
+        for acord in range(0, elements):
+            if ele[acord].is_displayed():
+                per = progress_bar(percent=percent, divide=len(ele))
+                percent += 1
+                elements -= 1
+
+                sys.stdout.write(f'\r{elements} Elements remaining... {per}')
+                sys.stdout.flush()
+                ele[acord].click()
+        print("\nCompleted!")
+        new_data = driver.page_source
+        driver.close()
+
+        if data != new_data:
+            data = new_data
+            requests.get(url=WEBHOOK_URL)
+            print("new data added")
         else:
-            service = Service(executable_path='/data/data/com.termux/files/usr/bin/geckodriver')
-    driver = webdriver.Firefox(service=service, options=options)
-
-    driver.get(url=url)
-    ele = driver.find_elements(By.TAG_NAME, 'h2')
-    elements = len(ele)
-    percent = 0
-    sys.stdout.write(f'{elements} Elements found in URL \n')
-    for acord in range(0, elements):
-        if ele[acord].is_displayed():
-            per = progress_bar(percent=percent, divide=len(ele))
-            percent += 1
-            elements -= 1
-
-            sys.stdout.write(f'\r{elements} Elements remaining... {per}')
-            sys.stdout.flush()
-            ele[acord].click()
-
-    sys.stdout.write("\rCompleted!\n")
-    new_data = driver.page_source
-    task_running = False
-    driver.close()
-
-    if data != new_data:
-        data = new_data
-        requests.get(url=WEBHOOK_URL)
-        print("new data added")
-    else:
-        print("no new data")
+            print("no new data")
+    except requests.exceptions.ConnectionError:
+        global not_connected
+        not_connected += 1
 
 
 
@@ -207,14 +204,14 @@ def is_connected(hostname):
   return False
 
 
-@scheduler.scheduled_job('cron', minute='05,15,25,35,45,55') #('interval', seconds=60)
+@scheduler.scheduled_job('interval', seconds=60) #('cron', minute='05,15,25,35,45,55') #
 def connection_status():
-    not_connected = 0
+    global not_connected
     if not is_connected("192.168.2.1"):
         not_connected += 1
     if not_connected > 3:
-        print(f'No internet connection!')
-        os.system('sudo reboot')
+        print('No internet connection!')
+        os.system(f'echo {SYSTEM_PASSWORD} | sudo -S reboot')
     if is_connected("192.168.2.1"):
         not_connected = 0
-    print(is_connected("192.168.2.1"), not_connected)
+    print(f"system connected: {is_connected('192.168.2.1')}.", f"Times not connected: {not_connected}.")
