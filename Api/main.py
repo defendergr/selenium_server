@@ -54,10 +54,6 @@ async def selenium(request: Request, url='', log='', wait=''):
     elif token in API_KEYS:
         options = Options()
         options.add_argument('--headless')
-        options.add_argument("--disable-web-security")
-        options.add_argument("--allow-running-insecure-content")
-        options.add_argument("--enable-logging")
-        options.add_argument("--log-level=3")
         if os.name == 'nt':
             service = Service(GeckoDriverManager().install())
         elif os.name == 'posix':
