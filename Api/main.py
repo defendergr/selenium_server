@@ -45,7 +45,7 @@ def agrules():
     return "https://defendersportstreams.com"
 
 @app.get("/selenium/")
-async def selenium(request: Request, url='', log='', wait=''):
+async def selenium(request: Request, url='', wait=''):
     token = request.headers.get('token')
     # sys.stdout.write('header token:', token)
     # print('header token:',token)
@@ -69,21 +69,23 @@ async def selenium(request: Request, url='', log='', wait=''):
         if wait == 'on':
             driver.get(url=url)
             driver.implicitly_wait(10)
+            data = driver.page_source
             driver.close()
-            return driver.page_source
+            return data
 
-        if log == 'on':
-            driver.get(url=url)
+        # if log == 'on':
+        #     driver.get(url=url)
             # network = driver.execute_script(
             #     "var performance = window.performance || window.mozPerformance || window.msPerformance || window.webkitPerformance || {}; var network = performance.getEntries() || {}; return network;")
-            network = driver.get_log('performance')
-            driver.close()
-            return network
+            # network = driver.get_log('performance')
+            # driver.close()
+            # return network
 
         if url != '' and 'widget' not in url:
             driver.get(url=url)
+            data = driver.page_source
             driver.close()
-            return driver.page_source
+            return data
         else:
             driver.get(url=url)
         ele = driver.find_elements(By.TAG_NAME, 'h2')
