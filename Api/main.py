@@ -52,6 +52,10 @@ async def selenium(request: Request, url='', log='', wait=''):
     if token not in API_KEYS:
         return 'invalid token'
     elif token in API_KEYS:
+        if 'http' or 'https' in url:
+            url = url
+        else:
+            url = 'https://' + url
         options = Options()
         options.add_argument('--headless')
         if os.name == 'nt':
