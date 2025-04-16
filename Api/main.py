@@ -21,13 +21,17 @@ import socket
 
 data = ''
 not_connected = 0
+times_has_lost_connection = 0
 
 
 def progress_bar(percent=0, divide=100, width=20):
-    left = width * percent // (divide - 1)
-    right = width - left
-    bar = '█' * int(left) + '░' * int(right)
-    return bar
+    try:
+        left = width * percent // (divide - 1)
+        right = width - left
+        bar = '█' * int(left) + '░' * int(right)
+        return bar
+    except ZeroDivisionError:
+        pass
 
 
 
@@ -41,16 +45,19 @@ def agrules():
     return "https://defendersportstreams.com"
 
 @app.get("/selenium/")
-async def selenium(request: Request, url=''):
+async def selenium(request: Request, url='', log='', wait=''):
     token = request.headers.get('token')
     # sys.stdout.write('header token:', token)
     # print('header token:',token)
-
     if token not in API_KEYS:
         return 'invalid token'
     elif token in API_KEYS:
         options = Options()
         options.add_argument('--headless')
+        options.add_argument("--disable-web-security")
+        options.add_argument("--allow-running-insecure-content")
+        options.add_argument("--enable-logging")
+        options.add_argument("--log-level=3")
         if os.name == 'nt':
             service = Service(GeckoDriverManager().install())
         elif os.name == 'posix':
@@ -59,8 +66,24 @@ async def selenium(request: Request, url=''):
             else:
                 service = Service(executable_path='/data/data/com.termux/files/usr/bin/geckodriver')
         driver = webdriver.Firefox(service=service, options=options)
+        if wait == 'on':
+            driver.get(url=url)
+            driver.implicitly_wait(10)
+            driver.close()
+            return driver.page_source
+
+        if log == 'on':
+            driver.get(url=url)
+            # network = driver.execute_script(
+            #     "var performance = window.performance || window.mozPerformance || window.msPerformance || window.webkitPerformance || {}; var network = performance.getEntries() || {}; return network;")
+            network = driver.get_log('performance')
+            driver.close()
+            return network
+
         if url == '':
-            driver.get(url=URL)
+            driver.get(url=url)
+            driver.close()
+            return driver.page_source
         else:
             driver.get(url=url)
         ele = driver.find_elements(By.TAG_NAME, 'h2')
@@ -143,7 +166,7 @@ def data(request: Request):
 
 
 # use when you want to run the job periodically at certain time(s) of day
-@scheduler.scheduled_job('interval', seconds=600) #('cron', minute='00,10,20,30,40,50') #
+@scheduler.scheduled_job('cron', minute='00,10,20,30,40,50') #('interval', seconds=600) #
 def cron_task():
     global data
     try:
@@ -207,11 +230,13 @@ def is_connected(hostname):
 @scheduler.scheduled_job('interval', seconds=60) #('cron', minute='05,15,25,35,45,55') #
 def connection_status():
     global not_connected
+    global times_has_lost_connection
     if not is_connected("192.168.2.1"):
         not_connected += 1
+        times_has_lost_connection += 1
     if not_connected > 3:
         print('No internet connection!')
         os.system(f'echo {SYSTEM_PASSWORD} | sudo -S reboot')
     if is_connected("192.168.2.1"):
         not_connected = 0
-    print(f"system connected: {is_connected('192.168.2.1')}.", f"Times not connected: {not_connected}.")
+    print(f"system connected: {is_connected('192.168.2.1')}.", f"Times not connected: {not_connected}.", f"Times has lost connection: {times_has_lost_connection}.")
