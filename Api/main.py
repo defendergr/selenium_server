@@ -212,31 +212,31 @@ def cron_task():
         not_connected += 1
 
 
-
-def is_connected(hostname):
-  try:
-    # See if we can resolve the host name - tells us if there is
-    # A DNS listening
-    host = socket.gethostbyname(hostname)
-    # Connect to the host - tells us if the host is actually reachable
-    s = socket.create_connection((host, 80), 2)
-    s.close()
-    return True
-  except Exception:
-     pass # We ignore any errors, returning False
-  return False
-
-
-@scheduler.scheduled_job('interval', seconds=60) #('cron', minute='05,15,25,35,45,55') #
-def connection_status():
-    global not_connected
-    global times_has_lost_connection
-    if not is_connected("192.168.2.1"):
-        not_connected += 1
-        times_has_lost_connection += 1
-    if not_connected > 3:
-        print('No internet connection!')
-        os.system(f'echo {SYSTEM_PASSWORD} | sudo -S reboot')
-    if is_connected("192.168.2.1"):
-        not_connected = 0
-    print(f"system connected: {is_connected('192.168.2.1')}.", f"Times not connected: {not_connected}.", f"Times has lost connection: {times_has_lost_connection}.")
+#
+# def is_connected(hostname):
+#   try:
+#     # See if we can resolve the host name - tells us if there is
+#     # A DNS listening
+#     host = socket.gethostbyname(hostname)
+#     # Connect to the host - tells us if the host is actually reachable
+#     s = socket.create_connection((host, 80), 2)
+#     s.close()
+#     return True
+#   except Exception:
+#      pass # We ignore any errors, returning False
+#   return False
+#
+#
+# @scheduler.scheduled_job('interval', seconds=60) #('cron', minute='05,15,25,35,45,55') #
+# def connection_status():
+#     global not_connected
+#     global times_has_lost_connection
+#     if not is_connected("192.168.2.1"):
+#         not_connected += 1
+#         times_has_lost_connection += 1
+#     if not_connected > 3:
+#         print('No internet connection!')
+#         os.system(f'echo {SYSTEM_PASSWORD} | sudo -S reboot')
+#     if is_connected("192.168.2.1"):
+#         not_connected = 0
+#     print(f"system connected: {is_connected('192.168.2.1')}.", f"Times not connected: {not_connected}.", f"Times has lost connection: {times_has_lost_connection}.")
