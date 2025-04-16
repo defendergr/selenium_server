@@ -54,6 +54,10 @@ async def selenium(request: Request, url='', log='', wait=''):
     elif token in API_KEYS:
         options = Options()
         options.add_argument('--headless')
+        options.add_argument("--disable-web-security")
+        options.add_argument("--allow-running-insecure-content")
+        options.add_argument("--enable-logging")
+        options.add_argument("--log-level=3")
         if os.name == 'nt':
             service = Service(GeckoDriverManager().install())
         elif os.name == 'posix':
@@ -76,7 +80,7 @@ async def selenium(request: Request, url='', log='', wait=''):
             driver.close()
             return network
 
-        if url == '':
+        if url != '' and 'widget' not in url:
             driver.get(url=url)
             driver.close()
             return driver.page_source
