@@ -20,8 +20,8 @@ import socket
 
 
 data = ''
-not_connected = 0
-times_has_lost_connection = 0
+# not_connected = 0
+# times_has_lost_connection = 0
 
 
 def progress_bar(percent=0, divide=100, width=20):
@@ -210,8 +210,9 @@ def cron_task():
         else:
             print("no new data")
     except requests.exceptions.ConnectionError:
-        global not_connected
-        not_connected += 1
+        pass
+        # global not_connected
+        # not_connected += 1
 
 
 #
