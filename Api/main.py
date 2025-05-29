@@ -209,8 +209,8 @@ def cron_task():
             print("new data added")
         else:
             print("no new data")
-    except requests.exceptions.ConnectionError:
-        pass
+    except requests.exceptions.ConnectionError as e:
+        print('connection error',e)
         # global not_connected
         # not_connected += 1
 
