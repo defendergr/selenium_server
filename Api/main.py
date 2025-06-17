@@ -204,6 +204,7 @@ def cron_task():
         driver.close()
 
         if data != new_data:
+            data = None
             data = new_data
             requests.get(url=WEBHOOK_URL)
             print("new data added")
@@ -211,10 +212,15 @@ def cron_task():
             print("no new data")
     except requests.exceptions.ConnectionError as e:
         print('connection error',e)
-        # global not_connected
-        # not_connected += 1
 
+@scheduler.scheduled_job('interval', hours=24) #('cron', minute='05,15,25,35,45,55') #
+def schedule_reboot():
+    os.system(f'echo {SYSTEM_PASSWORD} | sudo -S reboot')
 
+#         global not_connected
+#         not_connected += 1
+#
+#
 #
 # def is_connected(hostname):
 #   try:
