@@ -88,6 +88,7 @@ async def selenium(request: Request, url='', wait=''):
             return data
         else:
             driver.get(url=url)
+            driver.close()
         ele = driver.find_elements(By.TAG_NAME, 'h2')
         elements = len(ele)
         percent = 0
@@ -216,6 +217,10 @@ def cron_task():
 @scheduler.scheduled_job('interval', hours=24) #('cron', minute='05,15,25,35,45,55') #
 def schedule_reboot():
     os.system(f'echo {SYSTEM_PASSWORD} | sudo -S reboot')
+
+@scheduler.scheduled_job('interval', hours=6) #('cron', minute='05,15,25,35,45,55') #
+def schedule_reboot():
+    os.system(f'echo {SYSTEM_PASSWORD} | sudo pkill -f firefox-esr')
 
 #         global not_connected
 #         not_connected += 1
