@@ -219,7 +219,7 @@ def schedule_reboot():
     os.system(f'echo {SYSTEM_PASSWORD} | sudo -S reboot')
 
 @scheduler.scheduled_job('interval', hours=6) #('cron', minute='05,15,25,35,45,55') #
-def schedule_reboot():
+def schedule_firefox_kill():
     os.system(f'echo {SYSTEM_PASSWORD} | sudo pkill -f firefox-esr')
 
 #         global not_connected
