@@ -214,11 +214,11 @@ def cron_task():
     except requests.exceptions.ConnectionError as e:
         print('connection error',e)
 
-@scheduler.scheduled_job('interval', hours=24) #('cron', minute='05,15,25,35,45,55') #
+@scheduler.scheduled_job('interval', days=7) #('cron', minute='05,15,25,35,45,55') #
 def schedule_reboot():
     os.system(f'echo {SYSTEM_PASSWORD} | sudo -S reboot')
 
-@scheduler.scheduled_job('interval', hours=6) #('cron', minute='05,15,25,35,45,55') #
+@scheduler.scheduled_job('interval', hours=4) #('cron', minute='05,15,25,35,45,55') #
 def schedule_firefox_kill():
     os.system(f'echo {SYSTEM_PASSWORD} | sudo pkill -f firefox-esr')
 
