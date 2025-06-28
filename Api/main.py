@@ -187,10 +187,9 @@ def cron_task():
         driver = webdriver.Firefox(service=service, options=options)
         try:
             driver.get(url=url)
-        except:
-            print('loading...')
-            time.sleep(10)
-            driver.get(url=url)
+        except Exception as e:
+            print('connection error',e)
+
         ele = driver.find_elements(By.TAG_NAME, 'h2')
         elements = len(ele)
         percent = 0
