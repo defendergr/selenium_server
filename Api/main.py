@@ -185,8 +185,12 @@ def cron_task():
             else:
                 service = Service(executable_path='/data/data/com.termux/files/usr/bin/geckodriver')
         driver = webdriver.Firefox(service=service, options=options)
-
-        driver.get(url=url)
+        try:
+            driver.get(url=url)
+        except:
+            print('loading...')
+            time.sleep(10)
+            driver.get(url=url)
         ele = driver.find_elements(By.TAG_NAME, 'h2')
         elements = len(ele)
         percent = 0
@@ -205,7 +209,7 @@ def cron_task():
         driver.close()
 
         if data != new_data:
-            data = None
+            data = ''
             data = new_data
             requests.get(url=WEBHOOK_URL)
             print("new data added")
