@@ -37,7 +37,7 @@ def progress_bar(percent=0, divide=100, width=20):
 
 @app.get("/")
 def home():
-    return {"message": "Welcome to Selenium Server"}
+    return RedirectResponse("https://defendersportstreams.com/")
 
 
 # @app.get("/agrules")
@@ -47,33 +47,44 @@ def home():
 
 @app.get("/selenium")
 async def selenium(request: Request, url: str = '', wait: str = ''):
-    try:
-        if not url:
-            return {"message": "No URL provided"}
-        options = Options()
-        options.add_argument('--headless')
-        if os.name == 'nt':
-            service = Service(GeckoDriverManager().install())
-        elif os.name == 'posix':
-            if os.path.isfile('/usr/bin/geckodriver'):
-                service = Service(executable_path='/usr/bin/geckodriver')
-            else:
-                service = Service(executable_path='/data/data/com.termux/files/usr/bin/geckodriver')
-        driver = webdriver.Firefox(service=service, options=options)
-        driver.get(url=url)
-        if wait:
-            time.sleep(int(wait))
-        data = driver.page_source
-        driver.close()
-        return {"data": data}
-    except Exception as e:
-        return {"error": str(e)}
+    token = request.headers.get('token')
+    # sys.stdout.write('header token:', token)
+    # print('header token:',token)
+    if token not in API_KEYS:
+        return 'invalid token'
+    elif token in API_KEYS:
+        try:
+            if not url:
+                return {"message": "No URL provided"}
+            options = Options()
+            options.add_argument('--headless')
+            if os.name == 'nt':
+                service = Service(GeckoDriverManager().install())
+            elif os.name == 'posix':
+                if os.path.isfile('/usr/bin/geckodriver'):
+                    service = Service(executable_path='/usr/bin/geckodriver')
+                else:
+                    service = Service(executable_path='/data/data/com.termux/files/usr/bin/geckodriver')
+            driver = webdriver.Firefox(service=service, options=options)
+            driver.get(url=url)
+            if wait:
+                time.sleep(int(wait))
+            data = driver.page_source
+            driver.close()
+            return {"data": data}
+        except Exception as e:
+            return {"error": str(e)}
 
 
 @app.get("/data")
 async def data(request: Request):
-    global data
-    return {"data": data}
+    token = request.headers.get('token')
+    if token in API_KEYS:
+        sys.stdout.write('token accepted\n')
+        return data
+    else:
+        sys.stdout.write('invalid token\n')
+        return 'invalid token'
 
 
 # use when you want to run the job periodically at certain time(s) of day
