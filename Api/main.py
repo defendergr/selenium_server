@@ -40,11 +40,6 @@ def home():
     return RedirectResponse("https://defendersportstreams.com/")
 
 
-# @app.get("/agrules")
-# def agrules():
-#     return RedirectResponse("https://defendersportstreams.com/agrules")
-
-
 @app.get("/selenium")
 async def selenium(request: Request, url: str = '', wait: str = ''):
     token = request.headers.get('token')
@@ -85,6 +80,54 @@ async def data(request: Request):
     else:
         sys.stdout.write('invalid token\n')
         return 'invalid token'
+
+@app.get("/system/")
+def data(request: Request):
+    token = request.headers.get('token')
+    if token in API_KEYS:
+        # ASCII logo
+        logo = figlet_format('Defender', font='standard') # fonts url http://www.figlet.org/examples.html
+        # console print
+        cprint(logo, 'green')
+
+        if os.name == 'posix':
+            uptime = os.popen('uptime -p').read()
+        else:
+            uptime = None
+
+        system_info = {
+            "logo": logo, # use <pre> tag in html
+            "system": platform.system(),
+            "node": platform.node(),
+            "release": platform.release(),
+            "version": platform.version(),
+            "machine": platform.machine(),
+            "processor": platform.processor(),
+            "OS": platform.platform(),
+            "OS release": platform.release(),
+            "OS version": platform.version(),
+            "OS architecture": platform.architecture(),
+            "CPU cores": psutil.cpu_count(logical=False),
+            "CPU threads": psutil.cpu_count(),
+            "RAM": str(round(psutil.virtual_memory().total / (1024 ** 3)))+"GB",
+            "Disk": str(round(psutil.disk_usage('/').total / (1024 ** 3)))+"GB",
+            "GPU VRAM": str(round(psutil.virtual_memory().total / (1024 ** 3)))+"GB",
+            "CPU load": str(psutil.cpu_percent())+"%",
+            "Memory load": str(psutil.virtual_memory().percent)+"%",
+            # "CPU temperature": str(psutil.sensors_temperatures(fahrenheit=False))+"°C", # doesn't work in windows
+            "Network received": str(round(psutil.net_io_counters().bytes_recv/(1024 ** 2)))+"MB",
+            "Network sent": str(round(psutil.net_io_counters().bytes_sent/(1024 ** 2)))+"MB",
+            "Uptime": uptime,
+            "Disk usage": str(psutil.disk_usage('/').percent)+"% of "+str(round(psutil.disk_usage('/').total / (1024 ** 3)))+"GB",
+
+        }
+        return JSONResponse(content=system_info)
+        # return 'system info under construction'
+    else:
+        sys.stdout.write('invalid token\n')
+        return 'invalid token'
+
+
 
 
 # use when you want to run the job periodically at certain time(s) of day
