@@ -116,9 +116,7 @@ def cron_task():
                 try:
                     # Scroll element into view
                     driver.execute_script("arguments[0].scrollIntoView({block: 'center', behavior: 'smooth'})", element)
-                    # Small delay for scroll to complete
-                    time.sleep(0.5)
-                    
+
                     # Try to find and switch to iframe if it exists
                     try:
                         iframe = driver.find_element(By.CSS_SELECTOR, "iframe.container-c22f2ada4abad36c86abf7381670dc0b9365")
@@ -141,7 +139,6 @@ def cron_task():
                     
                     # Switch back to default content after clicking
                     driver.switch_to.default_content()
-                    time.sleep(0.5)  # Small delay after click
                 except Exception as e:
                     print(f"\nCould not click element {acord}: {str(e)}")
                     # Make sure we're back to default content if something goes wrong
