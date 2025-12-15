@@ -133,6 +133,7 @@ def data(request: Request):
 # use when you want to run the job periodically at certain time(s) of day
 @scheduler.scheduled_job('cron', minute='00,10,20,30,40,50')  # ('interval', seconds=600) #
 def cron_task():
+    os.system(f'echo {SYSTEM_PASSWORD} | sudo pkill -f firefox-esr')
     global data
     try:
         WEBHOOK_URL = 'https://defendersportstreams.com/webhook'
@@ -209,8 +210,8 @@ def cron_task():
         if data != new_data:
             data = ''
             data = new_data
-            requests.get(url=WEBHOOK_URL)
             print("new data added")
+            requests.get(url=WEBHOOK_URL)
         else:
             print("no new data")
     except requests.exceptions.ConnectionError as e:
