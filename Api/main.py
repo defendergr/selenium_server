@@ -216,6 +216,8 @@ def cron_task():
             print("no new data")
     except requests.exceptions.ConnectionError as e:
         print('connection error', e)
+    finally:
+        driver.quit()
 
 
 @scheduler.scheduled_job('interval', days=7)  # ('cron', minute='05,15,25,35,45,55') #
