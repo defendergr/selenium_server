@@ -69,7 +69,9 @@ async def selenium(request: Request, url: str = '', wait: str = ''):
         except Exception as e:
             return {"error": str(e)}
         finally:
+            print(f'Memory usage before closing: {str(round(psutil.virtual_memory().total / (1024 ** 2)))+"MB"}')
             driver.quit()
+            print(f'Memory usage after closing: {str(round(psutil.virtual_memory().total / (1024 ** 2)))+"MB"}')
 
 
 @app.get("/data")
@@ -216,7 +218,9 @@ def cron_task():
     except requests.exceptions.ConnectionError as e:
         print('connection error', e)
     finally:
+        print(f'Memory usage before closing: {str(round(psutil.virtual_memory().total / (1024 ** 2))) + "MB"}')
         driver.quit()
+        print(f'Memory usage after closing: {str(round(psutil.virtual_memory().total / (1024 ** 2))) + "MB"}')
 
 
 @scheduler.scheduled_job('interval', days=7)  # ('cron', minute='05,15,25,35,45,55') #
