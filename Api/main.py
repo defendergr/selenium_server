@@ -65,10 +65,11 @@ async def selenium(request: Request, url: str = '', wait: str = ''):
             if wait:
                 time.sleep(int(wait))
             data = driver.page_source
-            driver.close()
             return {"data": data}
         except Exception as e:
             return {"error": str(e)}
+        finally:
+            driver.quit()
 
 
 @app.get("/data")
@@ -205,8 +206,6 @@ def cron_task():
                     
         print("\nCompleted!")
         new_data = driver.page_source
-        driver.close()
-
         if data != new_data:
             data = ''
             data = new_data
