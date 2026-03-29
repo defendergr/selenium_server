@@ -1,0 +1,15 @@
+[Unit]
+Description=Selenium FastAPI Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/defender/selenium_server
+ExecStart=/home/defender/selenium_server/venv/bin/python3 /home/defender/selenium_server/run.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

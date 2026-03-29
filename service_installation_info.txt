@@ -1,0 +1,6 @@
+sudo mv /etc/systemd/system/server_start.service
+
+sudo systemctl daemon-reload
+sudo systemctl enable server_start.service
+sudo systemctl start server_start.service
+sudo systemctl status server_start.service
