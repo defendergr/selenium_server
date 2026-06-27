@@ -37,7 +37,7 @@ def progress_bar(percent=0, divide=100, width=20):
 
 @app.get("/")
 def home():
-    return RedirectResponse("https://defendersportstreams.com/")
+    return 'API v1' #RedirectResponse("https://defendersportstreams.com/")
 
 
 @app.get("/selenium")
